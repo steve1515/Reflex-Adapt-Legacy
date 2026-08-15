@@ -1,5 +1,8 @@
 name: Release
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -26,31 +29,30 @@ on:
 jobs:
   updater:
     name: Build Updater Tool
-    uses: misteraddons/Reflex-Adapt/.github/workflows/updater.yml@main
-    secrets: inherit
+    uses: ./.github/workflows/updater.yml
   firmware:
     name: Build Firmware
-    uses: misteraddons/Reflex-Adapt/.github/workflows/firmware.yml@main
+    uses: ./.github/workflows/firmware.yml
   assemble:
     name: Create Release
     runs-on: ubuntu-latest
     needs: [ updater, firmware ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
           go-version: '1.20'
           cache-dependency-path: |
              mister/go.sum
       - name: Download Updater
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           path: updater
           name: reflex_updater
       - name: Download Firmware
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           name: firmware
           path: firmware
@@ -85,7 +87,7 @@ jobs:
           cp -v _bin/reflex_updater.sh ../${RELEASE_DIR}/reflex_updater.sh
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: |
             reflex-${{ inputs.tag }}.tar.gz
@@ -95,7 +97,7 @@ jobs:
           body: ${{ inputs.release_desc }}
           draft: ${{ inputs.draft_release }}
       - name: Git Commit
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
         if: ${{ inputs.update_distribution }}
         with:
           add: distribution/${{ inputs.tag }}/* -f -A

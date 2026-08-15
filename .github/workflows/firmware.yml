@@ -1,5 +1,8 @@
 name: Firmware
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
   workflow_call:
@@ -14,16 +17,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install Arduino CLI
-        uses: arduino/setup-arduino-cli@v1
+        uses: arduino/setup-arduino-cli@81d310742121c928ea9c8bbd407b4217b432ae02 # v2
       - name: Install Arduino base platform
         run: arduino-cli core install arduino:avr
       - name: Install Arduino LUFA platform
         run: arduino-cli core install Arduino-LUFA:avr --additional-urls https://github.com/Palatis/Arduino-Lufa/raw/master/package_arduino-lufa_index.json
       - name: Build All
         run: make all
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: firmware
           path: firmware/
