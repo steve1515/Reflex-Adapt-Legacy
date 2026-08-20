@@ -155,60 +155,44 @@ func tryUpdateInis() error {
 // tryUpdateUboot checks if the user needs the usbhid.quirks option set in their u-boot.txt, prompts them if they want
 // to update it, and then updates it if they do. It is silent if u-boot.txt does not need updating.
 func tryUpdateUboot() (bool, error) {
-	//goland:noinspection GoBoolExpressions
-	if !quirksAreRequired {
-		fastUsb, err := mister.IsFastUsbPollActive()
-		if err != nil {
-			return false, err
-		}
-
-		if !fastUsb {
-			answer := utils.YesOrNoPrompt(
-				"Reflex Adapt works best with fast USB polling enabled in your system's u-boot.txt. Would you like to enable it?",
-			)
-			if !answer {
-				return false, nil
-			}
-
-			err = mister.EnableFastUsbPoll()
-			if err != nil {
-				return false, err
-			}
-
-			return true, nil
-		} else {
-			return false, nil
-		}
-	}
-
 	quirks, err := mister.GetUsbHidQuirks()
 	if err != nil {
 		return false, err
 	}
-
-	if !utils.Contains(quirks, adaptQuirks) {
-		answer := utils.YesOrNoPrompt(
-			"Reflex Adapt requires changes to your system's u-boot.txt for fast USB polling and composite USB devices. Would you like to update it?",
-		)
-		if !answer {
-			return false, nil
-		}
-
-		quirks = append(quirks, adaptQuirks)
-		err = mister.UpdateUsbHidQuirks(quirks)
-		if err != nil {
-			return false, err
-		}
-
-		err = mister.EnableFastUsbPoll()
-		if err != nil {
-			return false, err
-		}
-
-		return true, nil
+	fastUSB, err := mister.IsFastUsbPollActive()
+	if err != nil {
+		return false, err
 	}
 
-	return false, nil
+	missingQuirk, missingFastUSB := requiredUbootChanges(quirks, fastUSB)
+	if !missingQuirk && !missingFastUSB {
+		return false, nil
+	}
+
+	message := "Reflex Adapt works best with fast USB polling enabled in your system's u-boot.txt. Would you like to enable it?"
+	if missingQuirk {
+		message = "Reflex Adapt requires changes to your system's u-boot.txt for fast USB polling and composite USB devices. Would you like to update it?"
+	}
+	if !utils.YesOrNoPrompt(message) {
+		return false, nil
+	}
+
+	if missingQuirk {
+		quirks = append(quirks, adaptQuirks)
+		if err := mister.UpdateUsbHidQuirks(quirks); err != nil {
+			return false, err
+		}
+	}
+	if missingFastUSB {
+		if err := mister.EnableFastUsbPoll(); err != nil {
+			return false, err
+		}
+	}
+	return true, nil
+}
+
+func requiredUbootChanges(quirks []string, fastUSB bool) (missingQuirk, missingFastUSB bool) {
+	return quirksAreRequired && !utils.Contains(quirks, adaptQuirks), !fastUSB
 }
 
 // tryAddDb prompts if the user wants the updater repo db added to their downloader.ini file. Optionally, they can
