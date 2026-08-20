@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 )
 
@@ -247,14 +248,8 @@ func clearTerminal() {
 	fmt.Print("\033[H\033[2J")
 }
 
-func main() {
+func run() int {
 	wasError := false
-
-	//err := tryUpdateInis()
-	//if err != nil {
-	//	fmt.Printf("An error occurred while updating .ini files: %s\n", err)
-	//	wasError = true
-	//}
 
 	updated, err := tryAddDb()
 	if err != nil {
@@ -271,17 +266,14 @@ func main() {
 		wasError = true
 	}
 	if updated {
-		fmt.Printf("Writing u-boot.txt changes to disk")
-		wait := 0
-		for wait < 5 {
-			fmt.Printf(".")
-			wait++
-			time.Sleep(1 * time.Second)
+		fmt.Print("Writing u-boot.txt changes to disk")
+		for wait := 0; wait < 5; wait++ {
+			fmt.Print(".")
+			time.Sleep(time.Second)
 		}
 		fmt.Println()
-
 		fmt.Println("Please power cycle your MiSTer for these changes to take effect.")
-		os.Exit(0)
+		return 0
 	}
 
 	if wasError {
@@ -291,9 +283,13 @@ func main() {
 	updaterDir, err := extractUpdater()
 	if err != nil {
 		fmt.Printf("An error occurred while extracting the updater: %s\n", err)
-		_ = cleanupUpdater(updaterDir)
-		os.Exit(1)
+		return 1
 	}
+	defer func() {
+		if err := cleanupUpdater(updaterDir); err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to remove temporary updater files: %s\n", err)
+		}
+	}()
 
 	clearTerminal()
 
@@ -303,23 +299,32 @@ func main() {
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 
-	// forward signal to the updater
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs)
-	go func(cmd *exec.Cmd) {
-		sig := <-sigs
-		if cmd.Process != nil {
-			_ = cmd.Process.Signal(sig)
+	done := make(chan struct{})
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
+	defer signal.Stop(sigs)
+	go func() {
+		for {
+			select {
+			case sig := <-sigs:
+				if cmd.Process != nil {
+					_ = cmd.Process.Signal(sig)
+				}
+			case <-done:
+				return
+			}
 		}
-	}(cmd)
+	}()
 
 	err = cmd.Run()
+	close(done)
 	if err != nil {
 		fmt.Printf("An error occurred while running the updater: %s\n", err)
-		_ = cleanupUpdater(updaterDir)
-		os.Exit(1)
+		return 1
 	}
+	return 0
+}
 
-	_ = cleanupUpdater(updaterDir)
-	os.Exit(0)
+func main() {
+	os.Exit(run())
 }
