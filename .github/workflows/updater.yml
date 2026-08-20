@@ -17,7 +17,7 @@ on:
       - reflex_updater/**
 
 concurrency:
-  group: updater-\${{ github.workflow }}-\${{ github.ref }}
+  group: updater-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -39,7 +39,7 @@ jobs:
             host: windows-latest
             cross: false
             
-    runs-on: \${{ matrix.host }}
+    runs-on: ${{ matrix.host }}
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

@@ -19,7 +19,7 @@ on:
       - mister/generate_repo.py
 
 concurrency:
-  group: repo-\${{ github.workflow }}-\${{ github.ref }}
+  group: repo-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -42,8 +42,9 @@ jobs:
           version: tags/${{ steps.updater.outputs.release }}
           file: reflex_updater.sh
       - name: Generate Repo File
-        run: python3 ./mister/generate_repo.py "${{ steps.updater.outputs.release }}"
+        run: python3 ./mister/generate_repo.py "${{ steps.updater.outputs.release }}" --files-ref main --updater reflex_updater.sh
       - name: Commit Repo File
+        if: github.event_name != 'pull_request'
         uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
         with:
           add: reflex-adapt-legacy.json.zip
