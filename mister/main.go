@@ -13,7 +13,6 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -32,67 +31,72 @@ const (
 var updaterFiles embed.FS
 
 // extractUpdater extracts the embedded updater files to a temporary directory and returns the path to them.
-func extractUpdater() (string, error) {
-	tmp, err := os.MkdirTemp("", "reflex-updater-*")
+func extractUpdater() (tmp string, err error) {
+	tmp, err = os.MkdirTemp("", "reflex-updater-*")
 	if err != nil {
 		return "", err
 	}
+	defer func() {
+		if err != nil {
+			_ = os.RemoveAll(tmp)
+			tmp = ""
+		}
+	}()
 
 	topFiles, err := updaterFiles.ReadDir(".")
 	if err != nil {
 		return "", err
-	} else if len(topFiles) != 1 {
-		return "", fmt.Errorf("expected 1 top-level embedded folder, found %d files", len(topFiles))
+	}
+	if len(topFiles) != 1 || !topFiles[0].IsDir() {
+		return "", fmt.Errorf("expected one top-level embedded folder")
 	}
 
-	embedPrefix := topFiles[0].Name()
-
-	// this is a very complicated version of: cp -r <embedded files>/* <tmp folder>
-	err = fs.WalkDir(updaterFiles, embedPrefix, func(path string, entry fs.DirEntry, err error) error {
-		if path == embedPrefix {
+	source, err := fs.Sub(updaterFiles, topFiles[0].Name())
+	if err != nil {
+		return "", err
+	}
+	err = fs.WalkDir(source, ".", func(path string, entry fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if path == "." {
 			return nil
 		}
 
-		writePath := filepath.Join(tmp, strings.TrimPrefix(path, embedPrefix+"/"))
-
+		writePath := filepath.Join(tmp, filepath.FromSlash(path))
 		if entry.IsDir() {
 			return os.MkdirAll(writePath, 0755)
 		}
 
-		tmpFile, err := os.Create(writePath)
+		input, err := source.Open(path)
 		if err != nil {
 			return err
 		}
-		defer func(tmpFile *os.File) {
-			_ = tmpFile.Close()
-		}(tmpFile)
-
-		file, err := updaterFiles.Open(path)
+		output, err := os.OpenFile(writePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 		if err != nil {
+			_ = input.Close()
 			return err
 		}
-		defer func(file fs.File) {
-			_ = file.Close()
-		}(file)
-
-		_, err = io.Copy(tmpFile, file)
-		if err != nil {
-			return err
+		_, copyErr := io.Copy(output, input)
+		closeOutputErr := output.Close()
+		closeInputErr := input.Close()
+		if copyErr != nil {
+			return copyErr
 		}
-
+		if closeOutputErr != nil {
+			return closeOutputErr
+		}
+		if closeInputErr != nil {
+			return closeInputErr
+		}
 		if filepath.Base(writePath) == reflexBinName {
-			err = os.Chmod(writePath, 0755)
-			if err != nil {
-				return err
-			}
+			return os.Chmod(writePath, 0755)
 		}
-
 		return nil
 	})
 	if err != nil {
 		return "", err
 	}
-
 	return tmp, nil
 }
 
