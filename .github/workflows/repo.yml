@@ -6,14 +6,26 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
-  push:
+  pull_request:
     paths:
+      - .github/workflows/repo.yml
       - mister/config/**
-      - distribution/**
+      - mister/generate_repo.py
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/repo.yml
+      - mister/config/**
+      - mister/generate_repo.py
+
+concurrency:
+  group: repo-\${{ github.workflow }}-\${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
