@@ -1,7 +1,7 @@
 TARGET_NAMES = Nintendo Non-Nintendo Non-Nintendo-Sony Multitap PSX-JogCon \
 	Combo1 Combo2 Combo3 Combo4 Combo5 Combo6 Combo7 Combo8 Combo9 Combo10 \
 	Combo11 Combo12 Combo13 Combo14 Combo15 Combo16 Combo17 Combo18 Combo19 Combo20 \
-	Combo21 Combo22 Combo23 Combo24 Combo25
+	Combo21 Combo22 Combo23 Combo24 Combo25 Combo26
 
 
 # Saturn = 20%
@@ -284,6 +284,14 @@ Combo25.FLAGS = \
 	-DENABLE_REFLEX_SATURN \
 	-DENABLE_REFLEX_PSX -DENABLE_PSX_GENERAL_OLED \
 	-DGUNCON_SUPPORT -DGUNCON_FORCE_MODE=3 -DENABLE_PSX_GUNCON_OLED
+
+# NES+SNES+VB, N64 (Scaled), SMS+Atari+C64, Gen+Sat, PSX
+Combo26.FLAGS = \
+	-DENABLE_REFLEX_SNES -DSNES_ENABLE_VBOY \
+	-DENABLE_REFLEX_N64 -DN64_ANALOG_MAX=65 \
+	-DENABLE_SMS \
+	-DENABLE_REFLEX_SATURN \
+	-DENABLE_REFLEX_PSX -DENABLE_PSX_GENERAL_OLED
 
 
 PRJ_DIR = Reflex

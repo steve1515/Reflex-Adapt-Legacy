@@ -30,3 +30,4 @@ firmware/Combo22.hex,Combo 22: N64 (Scaled), Gen+Sat, PSX, PCE
 firmware/Combo23.hex,Combo 23: NES+SNES+VB, SMS+Atari+C64, Gen+Sat, PSX
 firmware/Combo24.hex,Combo 24: NES+SNES+VB, GameCube, Gen+Sat, PSX, NeoGeo
 firmware/Combo25.hex,Combo 25: NES+SNES+VB, SMS+Atari+C64, Gen+Sat, PSX+Guncon
+firmware/Combo26.hex,Combo 26: NES+SNES+VB, N64 (Scaled), SMS+Atari+C64, Gen+Sat, PSX
