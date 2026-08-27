@@ -6,14 +6,26 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
-  push:
+  pull_request:
     paths:
+      - .github/workflows/repo.yml
       - mister/config/**
-      - distribution/**
+      - mister/generate_repo.py
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/repo.yml
+      - mister/config/**
+      - mister/generate_repo.py
+
+concurrency:
+  group: repo-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -30,8 +42,9 @@ jobs:
           version: tags/${{ steps.updater.outputs.release }}
           file: reflex_updater.sh
       - name: Generate Repo File
-        run: python3 ./mister/generate_repo.py "${{ steps.updater.outputs.release }}"
+        run: python3 ./mister/generate_repo.py "${{ steps.updater.outputs.release }}" --files-ref main --updater reflex_updater.sh
       - name: Commit Repo File
+        if: github.event_name != 'pull_request'
         uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
         with:
           add: reflex-adapt-legacy.json.zip
