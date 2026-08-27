@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
 
 func TestRequiredUbootChanges(t *testing.T) {
 	tests := []struct {
@@ -23,5 +27,20 @@ func TestRequiredUbootChanges(t *testing.T) {
 				t.Fatalf("requiredUbootChanges() = (%v, %v), want (%v, %v)", gotQuirk, gotFastUSB, test.wantQuirk, test.wantFastUSB)
 			}
 		})
+	}
+}
+func TestExtractAndCleanupUpdater(t *testing.T) {
+	dir, err := extractUpdater()
+	if err != nil {
+		t.Fatalf("extractUpdater() error = %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "placeholder.txt")); err != nil {
+		t.Fatalf("embedded placeholder was not extracted: %v", err)
+	}
+	if err := cleanupUpdater(dir); err != nil {
+		t.Fatalf("cleanupUpdater() error = %v", err)
+	}
+	if _, err := os.Stat(dir); !os.IsNotExist(err) {
+		t.Fatalf("temporary directory still exists after cleanup: %v", err)
 	}
 }
