@@ -1,9 +1,9 @@
 # reflex-updater manifest
 category:Legacy: Dinput + PS3 (1-2P)
-firmware/Nintendo.hex,Nintendo: NES+SNES+VB, N64 (Scaled), GameCube, Wii
+firmware/Nintendo.hex,Nintendo: NES+SNES+VB+Tap, N64 (Scaled), GameCube, Wii
 firmware/Non-Nintendo.hex,Non-Nintendo: Gen+Sat, PSX+GunCon+neGcon, PCE, NeoGeo, Jaguar
 firmware/Non-Nintendo-Sony.hex,Non-Nintendo-Sony: SMS+Atari+C64+JP-PC, Gen+Sat, PCE, NeoGeo, Jaguar, 3DO
-firmware/Multitap.hex,Multitap: NES+SNES+Tap, Gen+Saturn+Tap, PCE+Tap
+firmware/Multitap.hex,Multitap: NES+SNES+VB+Tap, Gen+Saturn+Tap, PCE+Tap
 firmware/PSX-JogCon.hex,PSX JogCon: PSX JogCon [4 modes: Wheel (Mode+R2), Paddle (Mode+L2), Spinner (Mode+L2+R2) & Fake Spinner (Mode+R1+L1)]
 firmware/Combo1.hex,Combo 1: NES+SNES, Gen+Sat, PSX+Guncon+Jogcon
 firmware/Combo2.hex,Combo 2: NES+SNES, Gen+Sat+Tap, PSX+Guncon+neGcon
