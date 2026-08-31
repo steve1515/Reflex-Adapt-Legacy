@@ -10,7 +10,7 @@ on:
       - .github/workflows/mister.yml
       - mister/**
   push:
-    branches: [main]
+    branches: [legacy_v1]
     paths:
       - .github/workflows/mister.yml
       - mister/**
