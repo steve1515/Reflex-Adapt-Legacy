@@ -23,9 +23,9 @@ const (
 	adaptQuirks       = "0x16d0:0x127e:0x040"
 	adaptVidPid       = "0x16d0127e"
 	dbName            = "misteraddons/reflex-adapt-legacy"
-	dbUrl             = "https://raw.githubusercontent.com/misteraddons/Reflex-Adapt-Legacy/main/reflex-adapt-legacy.json.zip"
+	dbUrl             = "https://raw.githubusercontent.com/misteraddons/Reflex-Adapt-Legacy/legacy_v1/reflex-adapt-legacy.json.zip"
 	configFolder      = config.ScriptsConfigFolder + "/reflex"
-	noDbFile          = configFolder + "/.no-db-reflex-adapt-legacy"
+	noDbFile          = configFolder + "/.no-db-reflex-adapt-legacy-v1"
 )
 
 //go:embed _files
