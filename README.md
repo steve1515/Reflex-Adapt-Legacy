@@ -29,7 +29,7 @@ The Reflex Adapt updater, controller mappings and core configs will now be autom
 Alternatively, manually add the following to your `downloader.ini` file on the SD card:
 
 ```
-[misteraddons/reflex-adapt-legacy-v1]
+[misteraddons/reflex-adapt-legacy]
 db_url = https://raw.githubusercontent.com/misteraddons/Reflex-Adapt-Legacy/legacy_v1/reflex-adapt-legacy.json.zip
 ```
 
