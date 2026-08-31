@@ -20,6 +20,5 @@ firmware/MPGCombo17.hex,Combo 17: NES+SNES+VB, N64 (Scaled), GameCube
 firmware/MPGCombo18.hex,Combo 18: NES+SNES+VB, GameCube, Wii
 firmware/MPGCombo19.hex,Combo 19: N64 (Scaled), GameCube, Wii
 firmware/MPGCombo23.hex,Combo 23: NES+SNES+VB, N64 (Scaled), PCE
-firmware/MPGCombo24.hex,Combo 24: NES+SNES+VB, N64 (Scaled), Gen+Sat
 firmware/MPGVBNSO.hex,VB NSO: NES+SNES+VB with VB Right D-pad on Right Stick
 firmware/MPGPSX1200Test.hex,PSX-1200 Test: PSX Analog Init Retries for SCPH-1200
