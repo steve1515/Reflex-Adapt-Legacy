@@ -34,6 +34,14 @@
   SnesPort<SNES2_CLOCK, SNES2_LATCH, SNES2_DATA1> snes2;
 #endif
 
+#define USB_SERIAL_SNES "ReflexSNESNTT"
+#define USB_SERIAL_VB   "ReflexVboy"
+
+//A NES controller can misread as VB for a read or two right on insertion
+//(shared id bit before the id line settles). Require the new reading to hold
+//steady for this long before acting on it.
+#define VB_DEBOUNCE_MS 30
+
 bool isVirtualBoy = false;
 
 #ifdef ENABLE_REFLEX_PAD
@@ -139,6 +147,24 @@ void snesResetJoyValues(const uint8_t i) {
   usbStick[i]->resetState();
 }
 
+#ifdef SNES_ENABLE_VBOY
+  //Changes the joystick serial (used by MiSTer/host to tell VB and SNES/NTT pads apart)
+  //then does a soft USB disconnect/reattach, since the serial number string is only
+  //requested by the host once during enumeration and then cached.
+  void snesSetVirtualBoyMode(const bool vb)
+  {
+    isVirtualBoy = vb;
+
+    const char* serial = vb ? USB_SERIAL_VB : USB_SERIAL_SNES;
+    usbStick[0]->setSerial(serial);
+    usbStick[1]->setSerial(serial);
+
+    UDCON |= (1 << DETACH);
+    delay(250);
+    UDCON &= ~(1 << DETACH);
+  }
+#endif
+
 void snesSetup() {
   //Init the class
   snes1.begin();
@@ -166,13 +192,10 @@ void snesSetup() {
     totalUsb = MAX_USB_STICKS; //min(tap, MAX_USB_STICKS);
     sleepTime = 1000; //use longer interval between reads for multitap
   }
-  //sleepTime = 50;
-
-  //totalUsb = 4;
 
   //Create usb controllers
   for (uint8_t i = 0; i < totalUsb; i++) {
-    usbStick[i] = new Joy1_(isVirtualBoy ? "ReflexVboy" : "ReflexSNESNTT", JOYSTICK_DEFAULT_REPORT_ID + i, JOYSTICK_TYPE_GAMEPAD, totalUsb);
+    usbStick[i] = new Joy1_(isVirtualBoy ? USB_SERIAL_VB : USB_SERIAL_SNES, JOYSTICK_DEFAULT_REPORT_ID + i, JOYSTICK_TYPE_GAMEPAD, totalUsb);
   }
 
   //Set usb parameters and reset to default values
@@ -215,6 +238,34 @@ snesLoop() {
   const uint8_t joyCount2 = snes2.getControllerCount();
   const uint8_t joyCount = joyCount1 + joyCount2;
 
+  #ifdef SNES_ENABLE_VBOY
+    //Same VB detection done in snesSetup(), re-checked every loop since controllers
+    //can be hot plugged/swapped/unplugged on port 1 (the only port this uses).
+    //Debounced: see VB_DEBOUNCE_MS above.
+    if (totalUsb == 2)  // totalUsb == 2 means no multitap connected (see snesSetup())
+    {
+      //Starts equal to isVirtualBoy (not hardcoded false) so a boot-time VB
+      //controller doesn't look like an already-pending change to non-VB.
+      static bool pendingIsVirtualBoy = isVirtualBoy;
+      static unsigned long pendingSince = 0;
+
+      const bool currentIsVirtualBoy = joyCount1 != 0 && snes1.getSnesController(0).deviceType() == SNES_DEVICE_VB;
+
+      //Reading changed since last loop: restart its stability timer.
+      if (currentIsVirtualBoy != pendingIsVirtualBoy)
+      {
+        pendingIsVirtualBoy = currentIsVirtualBoy;
+        pendingSince = millis();
+      }
+
+      //Reading disagrees with what we're set to, and has held long enough: apply it.
+      if (pendingIsVirtualBoy != isVirtualBoy && millis() - pendingSince >= VB_DEBOUNCE_MS)
+      {
+        snesSetVirtualBoyMode(pendingIsVirtualBoy);
+      }
+    }
+  #endif
+
   for (uint8_t i = 0; i < joyCount; i++) {
     if (i == totalUsb)
       break;
@@ -237,17 +288,17 @@ snesLoop() {
     if(sc.stateChanged()) {
       stateChanged = true;
       
+      const SnesDeviceType_Enum padType = sc.deviceType();
+
       //Controller just connected.
       if (sc.deviceJustChanged()) {
         snesResetJoyValues(i);
         #ifdef ENABLE_REFLEX_PAD
           //Only used if not in multitap mode
           if (totalUsb == 2)
-            ShowDefaultPadSnes(inputPort, sc.deviceType());
+            ShowDefaultPadSnes(inputPort, padType);
         #endif
       }
-
-      const SnesDeviceType_Enum padType = sc.deviceType();
 
       uint8_t hatData = sc.hat();
       uint32_t buttonData = 0;
