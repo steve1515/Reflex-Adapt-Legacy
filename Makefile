@@ -104,9 +104,9 @@ Combo3.FLAGS = \
 	-DJOGCON_SUPPORT -DENABLE_PSX_JOGCON_OLED \
 	-DNEGCON_SUPPORT -DNEGCON_FORCE_MODE=1
 
-# NES+SNES+VB, N64 (Original), PSX+Guncon+Jogcon+neGcon, PCE
+# NES+SNES, N64 (Original), PSX+Guncon+Jogcon+neGcon, PCE
 Combo4.FLAGS = \
-	-DENABLE_REFLEX_SNES -DSNES_ENABLE_VBOY \
+	-DENABLE_REFLEX_SNES \
 	-DENABLE_REFLEX_N64 \
 	-DENABLE_REFLEX_PSX -DENABLE_PSX_GENERAL_OLED \
 	-DGUNCON_SUPPORT -DGUNCON_FORCE_MODE=3 -DENABLE_PSX_GUNCON_OLED \
@@ -154,9 +154,9 @@ Combo8.FLAGS = \
 	-DENABLE_REFLEX_JAGUAR \
 	-DENABLE_REFLEX_3DO
 
-# NES+SNES+VB, N64 (Scaled), GameCube, Wii, PSX+neGcon
+# NES+SNES, N64 (Scaled), GameCube, Wii, PSX+neGcon
 Combo9.FLAGS = \
-	-DENABLE_REFLEX_SNES -DSNES_ENABLE_VBOY \
+	-DENABLE_REFLEX_SNES \
 	-DENABLE_REFLEX_N64 -DN64_ANALOG_MAX=65 \
 	-DENABLE_REFLEX_GAMECUBE \
 	-DENABLE_REFLEX_WII \
@@ -309,7 +309,7 @@ all: $(TARGETS) $(TARGET_DIR)/sizes.txt
 
 $(TARGET_DIR)/%.hex: $(SRC) | $(TARGET_DIR)
 	@[ "$($*.FLAGS)" ] || ( echo ">> $*.FLAGS is not set"; exit 1 )
-	arduino-cli compile $(CLI_OPT) --build-property "build.extra_flags={build.usb_flags} -mrelax -DREFLEX_NO_DEFAULTS $($*.FLAGS)" --build-property "compiler.c.elf.extra_flags=-Wl,--relax" -e --output-dir $(BUILD_DIR)/$*
+	arduino-cli compile $(CLI_OPT) --build-property "build.extra_flags={build.usb_flags} -DREFLEX_NO_DEFAULTS $($*.FLAGS)" -e --output-dir $(BUILD_DIR)/$*
 	cp $(BUILD_DIR)/$*/Reflex.ino.elf $(TARGET_DIR)/$*.elf
 	cp $(BUILD_DIR)/$*/Reflex.ino.hex $(TARGET_DIR)/$*.hex
 

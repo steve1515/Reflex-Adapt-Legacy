@@ -8,12 +8,12 @@ firmware/PSX-JogCon.hex,PSX JogCon: PSX JogCon [4 modes: Wheel (Mode+R2), Paddle
 firmware/Combo1.hex,Combo 1: NES+SNES, Gen+Sat, PSX+Guncon+Jogcon
 firmware/Combo2.hex,Combo 2: NES+SNES+VB, Gen+Sat+Tap, PSX+Guncon+neGcon
 firmware/Combo3.hex,Combo 3: NES+SNES, Gen+Sat+Tap, PSX+Jogcon+neGcon
-firmware/Combo4.hex,Combo 4: NES+SNES+VB, N64 (Original), PSX+Guncon+Jogcon+neGcon, PCE
+firmware/Combo4.hex,Combo 4: NES+SNES, N64 (Original), PSX+Guncon+Jogcon+neGcon, PCE
 firmware/Combo5.hex,Combo 5: NES+SNES, N64 (Scaled), PSX+Guncon+Jogcon+neGcon, NeoGeo, Jaguar
 firmware/Combo6.hex,Combo 6: NES+SNES, Wii, PSX+Guncon+Jogcon+neGcon, NeoGeo
 firmware/Combo7.hex,Combo 7: Gen+Sat, PSX+Guncon+Jogcon+neGcon, NeoGeo
 firmware/Combo8.hex,Combo 8: N64 (Scaled), GameCube, Wii, PCE, NeoGeo, Jaguar, 3DO
-firmware/Combo9.hex,Combo 9: NES+SNES+VB, N64 (Scaled), GameCube, Wii, PSX+neGcon
+firmware/Combo9.hex,Combo 9: NES+SNES, N64 (Scaled), GameCube, Wii, PSX+neGcon
 firmware/Combo10.hex,Combo 10: NES+SNES+VB, N64 (Scaled), Wii, PSX+JogCon
 firmware/Combo11.hex,Combo 11: NES+SNES+VB, N64 (Scaled), Wii, PSX+GunCon+neGcon
 firmware/Combo12.hex,Combo 12: NES+SNES+VB, N64 (Scaled), Gen+Sat, PSX

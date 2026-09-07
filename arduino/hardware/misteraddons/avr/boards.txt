@@ -49,8 +49,7 @@ reflex.build.usb_product="Reflex Adapt"
 reflex.build.board=AVR_LEONARDO
 reflex.build.core=arduino:arduino
 reflex.build.variant=arduino:leonardo
-reflex.build.extra_flags={build.usb_flags} -mrelax
-reflex.compiler.c.elf.extra_flags=-Wl,--relax
+reflex.build.extra_flags={build.usb_flags}
 
 ##############################################################
 
@@ -105,5 +104,4 @@ reflexswitch.build.usb_product="POKKEN CONTROLLER"
 reflexswitch.build.board=AVR_LEONARDO
 reflexswitch.build.core=arduino:arduino
 reflexswitch.build.variant=arduino:leonardo
-reflexswitch.build.extra_flags={build.usb_flags} -mrelax
-reflexswitch.compiler.c.elf.extra_flags=-Wl,--relax
+reflexswitch.build.extra_flags={build.usb_flags}
