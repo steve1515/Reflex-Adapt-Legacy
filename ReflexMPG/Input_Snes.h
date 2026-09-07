@@ -120,24 +120,25 @@ class ReflexInputSnes : public RZInputModule {
           return;
       
         if (index < 2) {
-          //const uint8_t startCol = index == 0 ? 0 : 11*6;
+
           #ifdef SNES_ENABLE_VBOY
-          if (isVirtualBoy) {
+          if (padType == SNES_DEVICE_VB) {
             for(uint8_t x = 0; x < 14; ++x){
               const Pad pad = padVB[x];
               PrintPadChar(index, padDivision[index].firstCol, pad.col, pad.row, pad.padvalue, true, pad.on, pad.off, true);
             }
           } else 
           #endif
+
           {
             for(uint8_t x = 0; x < 12; ++x){
               if(padType == SNES_DEVICE_NES && x > 7)
                 continue;
+
               const Pad pad = (padType == SNES_DEVICE_NES && x < 4) ? padSnes[x+12] : padSnes[x]; //NES uses horizontal align
               PrintPadChar(index, padDivision[index].firstCol, pad.col, pad.row, pad.padvalue, true, pad.on, pad.off, true);
             }        
           }
-    
         }
       }
     
@@ -190,9 +191,6 @@ class ReflexInputSnes : public RZInputModule {
         totalUsb = MAX_USB_STICKS; //min(tap, MAX_USB_STICKS);
         sleepTime = 1000; //use longer interval between reads for multitap
       }
-      //sleepTime = 50;
-    
-      //totalUsb = 4;
 
       delayMicroseconds(sleepTime);
     }
@@ -371,29 +369,24 @@ class ReflexInputSnes : public RZInputModule {
           #ifdef ENABLE_REFLEX_PAD
             //Only used if not in multitap mode
             if (totalUsb == 2 && inputPort < 2) {
-              //const uint8_t startCol = inputPort == 0 ? 0 : 11*6;
     
               #ifdef SNES_ENABLE_VBOY
-                if (isVirtualBoy) {
+                if (padType == SNES_DEVICE_VB) {
                   for(uint8_t x = 0; x < 14; ++x){
-    //                if(padType == SNES_DEVICE_NES && x > 7)
-    //                  continue;
                     const Pad pad = padVB[x];
-                    if (x < 12) {
-                      if (padType == SNES_DEVICE_NES && x > 7)
-                        PrintPadChar(inputPort, padDivision[inputPort].firstCol, pad.col, pad.row, pad.padvalue, false, pad.on, pad.off);
-                      else
-                        PrintPadChar(inputPort, padDivision[inputPort].firstCol, pad.col, pad.row, pad.padvalue, sc.digitalPressed((SnesDigital_Enum)pad.padvalue), pad.on, pad.off);
-                    } else {
-                      PrintPadChar(inputPort, padDivision[inputPort].firstCol, pad.col, pad.row, pad.padvalue, padType == SNES_DEVICE_VB && sc.nttPressed((SnesDigitalNTT_Enum)(pad.padvalue >> 12)), pad.on, pad.off);
-                    }
+
+                    PrintPadChar(inputPort, padDivision[inputPort].firstCol, pad.col, pad.row, pad.padvalue,
+                      ((x < 12) ? sc.digitalPressed((SnesDigital_Enum)pad.padvalue) : sc.nttPressed((SnesDigitalNTT_Enum)(pad.padvalue >> 12))),
+                      pad.on, pad.off);
                   }
                 } else
               #endif
+
               {
                 for(uint8_t x = 0; x < 12; ++x){
                   if(padType == SNES_DEVICE_NES && x > 7)
                     continue;
+
                   const Pad pad = (padType == SNES_DEVICE_NES && x < 4) ? padSnes[x+12] : padSnes[x]; //NES uses horizontal align
                   PrintPadChar(inputPort, padDivision[inputPort].firstCol, pad.col, pad.row, pad.padvalue, sc.digitalPressed((SnesDigital_Enum)pad.padvalue), pad.on, pad.off);
                 }
