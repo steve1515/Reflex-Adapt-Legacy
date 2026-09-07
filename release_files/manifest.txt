@@ -4,7 +4,7 @@ firmware/MPGCombo1.hex,Combo 1: N64 (Scaled), GameCube, PSX+neGcon
 firmware/MPGCombo2.hex,Combo 2: NES+SNES+VB, N64 (Scaled), GameCube, SMS+Atari+C64+JP-PC, NeoGeo
 firmware/MPGCombo3.hex,Combo 3: NES+SNES+VB, N64 (Scaled), PSX+neGcon
 firmware/MPGCombo4.hex,Combo 4: NES+SNES+VB, N64 (Scaled), PSX, NeoGeo
-firmware/MPGCombo5.hex,Combo 5: NES+SNES+VB, N64 (Scaled), GameCube, PCE, NeoGeo
+firmware/MPGCombo5.hex,Combo 5: NES+SNES, N64 (Scaled), GameCube, PCE, NeoGeo
 firmware/MPGCombo6.hex,Combo 6: NES+SNES+VB, SMS+Atari+C64, PCE, NeoGeo, Jaguar
 firmware/MPGCombo7.hex,Combo 7: SMS+Atari+C64, Gen+Sat, PSX, NeoGeo
 firmware/MPGCombo8.hex,Combo 8: NES+SNES+VB, Gen+Sat, PCE, NeoGeo
