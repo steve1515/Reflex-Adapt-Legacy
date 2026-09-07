@@ -6,7 +6,7 @@ firmware/Non-Nintendo-Sony.hex,Non-Nintendo-Sony: SMS+Atari+C64+JP-PC, Gen+Sat, 
 firmware/Multitap.hex,Multitap: NES+SNES+VB+Tap, Gen+Saturn+Tap, PCE+Tap
 firmware/PSX-JogCon.hex,PSX JogCon: PSX JogCon [4 modes: Wheel (Mode+R2), Paddle (Mode+L2), Spinner (Mode+L2+R2) & Fake Spinner (Mode+R1+L1)]
 firmware/Combo1.hex,Combo 1: NES+SNES, Gen+Sat, PSX+Guncon+Jogcon
-firmware/Combo2.hex,Combo 2: NES+SNES, Gen+Sat+Tap, PSX+Guncon+neGcon
+firmware/Combo2.hex,Combo 2: NES+SNES+VB, Gen+Sat+Tap, PSX+Guncon+neGcon
 firmware/Combo3.hex,Combo 3: NES+SNES, Gen+Sat+Tap, PSX+Jogcon+neGcon
 firmware/Combo4.hex,Combo 4: NES+SNES+VB, N64 (Original), PSX+Guncon+Jogcon+neGcon, PCE
 firmware/Combo5.hex,Combo 5: NES+SNES, N64 (Scaled), PSX+Guncon+Jogcon+neGcon, NeoGeo, Jaguar
