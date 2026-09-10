@@ -148,6 +148,8 @@ void snesResetJoyValues(const uint8_t i) {
 }
 
 #ifdef SNES_ENABLE_VBOY
+  bool snesResendReports = false;
+
   //Changes the joystick serial (used by MiSTer/host to tell VB and SNES/NTT pads apart)
   //then does a soft USB disconnect/reattach, since the serial number string is only
   //requested by the host once during enumeration and then cached.
@@ -161,7 +163,10 @@ void snesResetJoyValues(const uint8_t i) {
 
     UDCON |= (1 << DETACH);
     delay(250);
-    UDCON &= ~(1 << DETACH);
+    // Reset the core's configuration flag as well as reconnecting USB. Merely
+    // clearing DETACH leaves configured() true until the host issues a reset.
+    USBDevice.attach();
+    snesResendReports = true;
   }
 #endif
 
@@ -402,6 +407,16 @@ snesLoop() {
 
   //Keep count for next read
   lastControllerCount = joyCount;
+
+  #ifdef SNES_ENABLE_VBOY
+    // Enumeration clears the host's input state. Send both current reports,
+    // including held buttons and disconnected pads, once the host is ready.
+    if (snesResendReports && USBDevice.configured()) {
+      for (uint8_t i = 0; i < totalUsb; i++)
+        usbStick[i]->sendState();
+      snesResendReports = false;
+    }
+  #endif
   
   return stateChanged;
 }

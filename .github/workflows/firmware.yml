@@ -11,12 +11,14 @@ on:
       - .github/workflows/firmware.yml
       - Makefile
       - Reflex/**
+      - tests/**
   push:
     branches: [legacy_v1]
     paths:
       - .github/workflows/firmware.yml
       - Makefile
       - Reflex/**
+      - tests/**
 
 concurrency:
   group: firmware-${{ github.workflow }}-${{ github.ref }}
@@ -32,6 +34,8 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install Arduino CLI
         uses: arduino/setup-arduino-cli@81d310742121c928ea9c8bbd407b4217b432ae02 # v2
+      - name: Test USB hot-swap reports
+        run: python3 -m unittest discover -s tests -v
       - name: Install Arduino base platform
         run: arduino-cli core install arduino:avr
       - name: Install Arduino LUFA platform
